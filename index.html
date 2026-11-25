@@ -285,8 +285,13 @@
   #fcFwdTitle:focus{outline:none;}
   .modal-box .wh-grid{gap:8px;}
   .modal-box .wh-opt{padding:10px 8px;border-radius:11px;}
-  #fcFwdPanel{max-height:calc(100% - 28px);}
-  #fcFwdPanel .fwd-field-label{font-size:10.5px;color:var(--ink-3);margin:10px 0 5px;}
+  #fcFwdPanel,#whSheetPanel{max-height:calc(100% - 28px);}
+  #whSheetPanel{display:flex;flex-direction:column;overflow:hidden;}
+  #whSheetPanel .modal-hd,.wh-sheet-actions{flex:none;}
+  .wh-sheet-fields{min-height:0;overflow-y:auto;scrollbar-width:thin;}
+  .wh-sheet-actions{display:flex;gap:9px;margin-top:12px;}
+  #mvNo{font-size:13px;}
+  #fcFwdPanel .fwd-field-label,.mv-pallet-label{display:block;font-size:10.5px;color:var(--ink-3);margin:10px 0 5px;}
   #fcFwdPanel .modal-hd+.fwd-field-label,#fwdNoWrap .fwd-field-label{margin-top:0;}
   .fwd-photos{margin-top:12px;}
   .fwd-photo-hd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;}
@@ -311,11 +316,14 @@
     padding:0;border:0;border-radius:50%;background:rgba(18,45,67,.88);color:#fff;font:600 16px/1 sans-serif;cursor:pointer;}
   .fwd-photo-add:focus-visible,.fwd-photo-remove:focus-visible,.fwd-photo-link:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px;}
   @media(max-height:650px){
-    #fcFwdPanel{padding-block:12px;}
-    #fcFwdPanel .modal-hd{margin-bottom:8px;}
+    #fcFwdPanel,#whSheetPanel{padding-block:12px;}
+    #fcFwdPanel .modal-hd,#whSheetPanel .modal-hd{margin-bottom:8px;}
     #fcFwdPanel .fwd-field-label{margin-top:7px;}
     .fwd-photos{margin-top:8px;}
     .fwd-photo-tiles:empty+.fwd-photo-add{min-height:52px;}
+  }
+  @media(max-width:350px){
+    #mvNo{font-size:11.5px;letter-spacing:.35px;}
   }
 
   /* ===== 底部选择面板 ===== */
@@ -391,13 +399,13 @@
   .pl-item .idx{width:18px;font-size:10.5px;color:var(--ink-3);flex:none;font-variant-numeric:tabular-nums;}
   .pl-item .no{font-size:12.5px;font-weight:700;letter-spacing:.2px;font-variant-numeric:tabular-nums;}
   .pl-item .meta{font-size:10.5px;color:var(--ink-3);margin-top:2px;}
-  .pl-item .meta.in-box-row{display:flex;align-items:baseline;gap:5px;white-space:nowrap;}
-  .in-box-meta{color:var(--ink-2);font-variant-numeric:tabular-nums;}
-  @media(max-width:350px){
-    #inBody .pl-item:has(.in-box-row){column-gap:5px;}
-    #inBody .pl-item:has(.in-box-row) > .chk{margin-right:4px;}
-    #inBody .meta.in-box-row{gap:3px;font-size:10px;letter-spacing:-.12px;}
-  }
+  .list-row-heading{grid-area:1 / 2;min-width:0;}
+  .list-meta{grid-area:2 / 2 / 3 / -1;display:flex;align-items:baseline;gap:6px;min-width:0;
+    white-space:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;}
+  .list-meta > span{flex:none;}
+  .list-meta:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px;border-radius:3px;}
+  .list-pallet,.list-box-line{font-variant-numeric:tabular-nums;}
+  .in-box-meta{margin-left:5px;}
   .pl-item .rt,.picked .rt{margin-left:auto;text-align:right;flex:none;}
   .pl-item .rt .t,.picked .rt .t{font-size:10px;color:var(--ink-3);font-variant-numeric:tabular-nums;}
   .pl-item .rt .tag,.picked .rt .tag{margin-top:3px;}
@@ -412,6 +420,14 @@
   .picked .rm{margin-left:auto;min-height:30px;font-family:inherit;font-size:11px;color:var(--danger);border:1px solid #EACBC7;border-radius:8px;padding:4px 9px;background:#FFF8F7;font-weight:600;flex:none;cursor:pointer;}
 
   .picked .rm:active{background:var(--danger-tint);border-color:#DBABA5;}
+  .pl-item.pallet-list-row,.picked.pallet-list-row{display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;gap:2px 9px;}
+  .pallet-list-row > .list-meta{margin-top:0;}
+  .pallet-list-row > :is(.chk,.idx){grid-area:1 / 1 / span 2;align-self:center;}
+  .pallet-list-row > .rt{grid-area:1 / 3;display:flex;align-items:center;gap:6px;}
+  .pallet-list-row > .rt .tag{order:-1;margin-top:0;}
+  .picked.pallet-queue-row{grid-template-columns:max-content minmax(0,1fr) max-content max-content;}
+  .pallet-queue-row > .tag{grid-area:1 / 3;}
+  .pallet-queue-row > .rm{grid-area:1 / 4;}
 
   /* ===== toast ===== */
   .toast{position:fixed;left:50%;bottom:158px;transform:translateX(-50%) translateY(8px);background:rgba(15,23,42,.95);color:#fff;font-size:12.5px;font-weight:500;padding:11px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.22s;z-index:99;max-width:82%;text-align:center;line-height:1.55;box-shadow:0 10px 28px rgba(0,0,0,.28);overflow-wrap:anywhere;}
@@ -766,6 +782,10 @@
   </div>
   <div class="fwd-field-label">预报仓库</div>
   <select class="input" id="fwdWh" style="height:38px;font-size:13px;padding:0 9px;"></select>
+  <div id="fwdPalletWrap" hidden>
+    <label class="fwd-field-label" for="fwdPalletId">托盘ID</label>
+    <input class="input code" id="fwdPalletId" placeholder="选填，多个包裹共用此托盘ID" style="height:38px;font-size:13px;padding:0 10px;">
+  </div>
   <div class="fwd-field-label">备注</div>
   <input class="input" id="fwdRemark" placeholder="选填，如 客户要求周五前发运" style="height:38px;font-size:13px;padding:0 10px;">
   <div class="fwd-photos" id="fwdPhotos">
@@ -789,39 +809,45 @@
 <div class="modal-mask" id="sheetMask" onclick="closeWhSheet()"></div>
 <div class="modal-box" id="whSheetPanel">
   <div class="modal-hd"><span class="t">发起移仓</span><span class="s" id="whSheetSub">共 0 件</span></div>
-  <div style="font-size:10.5px;color:var(--ink-3);margin-bottom:6px;">目的仓</div>
-  <div class="wh-grid" id="whSheetGrid"></div>
-  <div style="display:flex;gap:9px;margin-top:10px;">
-    <div style="flex:1;">
-      <div style="font-size:10.5px;color:var(--ink-3);margin-bottom:5px;">移仓类型</div>
-      <select class="input" id="mvType" style="height:38px;font-size:13px;padding:0 9px;">
-        <option value="中转移仓">中转移仓</option>
-        <option value="调拨移仓">调拨移仓</option>
-        <option value="退件移仓">退件移仓</option>
-      </select>
+  <div class="wh-sheet-fields" id="whSheetFields">
+    <div style="font-size:10.5px;color:var(--ink-3);margin-bottom:6px;">目的仓</div>
+    <div class="wh-grid" id="whSheetGrid"></div>
+    <div style="display:flex;gap:9px;margin-top:10px;">
+      <div style="flex:1;">
+        <div style="font-size:10.5px;color:var(--ink-3);margin-bottom:5px;">移仓类型</div>
+        <select class="input" id="mvType" style="height:38px;font-size:13px;padding:0 9px;">
+          <option value="中转移仓">中转移仓</option>
+          <option value="调拨移仓">调拨移仓</option>
+          <option value="退件移仓">退件移仓</option>
+        </select>
+      </div>
+      <div style="flex:1.2;">
+        <div style="font-size:10.5px;color:var(--ink-3);margin-bottom:5px;">移仓编号</div>
+        <input class="input code" id="mvNo" style="height:38px;padding:0 9px;">
+      </div>
     </div>
-    <div style="flex:1.2;">
-      <div style="font-size:10.5px;color:var(--ink-3);margin-bottom:5px;">移仓编号</div>
-      <input class="input code" id="mvNo" style="height:38px;font-size:13px;padding:0 9px;">
+    <div style="margin-top:9px;">
+      <div style="font-size:10.5px;color:var(--ink-3);margin-bottom:5px;">移仓时间</div>
+      <input type="datetime-local" class="input" id="mvTime" style="height:38px;font-size:13px;padding:0 10px;width:100%;">
+    </div>
+    <div style="margin-top:9px;">
+      <div style="font-size:10.5px;color:var(--ink-3);margin-bottom:5px;">预计到达</div>
+      <input type="datetime-local" class="input" id="mvEta" style="height:38px;font-size:13px;padding:0 10px;width:100%;">
+    </div>
+    <div>
+      <label class="mv-pallet-label" for="mvPalletId">托盘ID</label>
+      <input class="input code" id="mvPalletId" placeholder="选填，多个包裹共用此托盘ID" style="height:38px;font-size:13px;padding:0 10px;">
+    </div>
+    <div style="margin-top:9px;">
+      <label for="mvReason" style="display:block;font-size:10.5px;color:var(--ink-3);margin-bottom:5px;">移仓原因</label>
+      <input class="input" id="mvReason" placeholder="选填，如 库容调整、线路调拨" style="height:38px;font-size:13px;">
+    </div>
+    <div style="margin-top:9px;">
+      <label for="mvRemark" style="display:block;font-size:10.5px;color:var(--ink-3);margin-bottom:5px;">备注</label>
+      <input class="input" id="mvRemark" placeholder="选填，如 走陆运、需加固" style="height:38px;font-size:13px;">
     </div>
   </div>
-  <div style="margin-top:9px;">
-    <div style="font-size:10.5px;color:var(--ink-3);margin-bottom:5px;">移仓时间</div>
-    <input type="datetime-local" class="input" id="mvTime" style="height:38px;font-size:13px;padding:0 10px;width:100%;">
-  </div>
-  <div style="margin-top:9px;">
-    <div style="font-size:10.5px;color:var(--ink-3);margin-bottom:5px;">预计到达</div>
-    <input type="datetime-local" class="input" id="mvEta" style="height:38px;font-size:13px;padding:0 10px;width:100%;">
-  </div>
-  <div style="margin-top:9px;">
-    <label for="mvReason" style="display:block;font-size:10.5px;color:var(--ink-3);margin-bottom:5px;">移仓原因</label>
-    <input class="input" id="mvReason" placeholder="选填，如 库容调整、线路调拨" style="height:38px;font-size:13px;">
-  </div>
-  <div style="margin-top:9px;">
-    <label for="mvRemark" style="display:block;font-size:10.5px;color:var(--ink-3);margin-bottom:5px;">备注</label>
-    <input class="input" id="mvRemark" placeholder="选填，如 走陆运、需加固" style="height:38px;font-size:13px;">
-  </div>
-  <div style="display:flex;gap:9px;margin-top:12px;">
+  <div class="wh-sheet-actions">
     <button class="btn btn-ghost" style="flex:1;" onclick="closeWhSheet()">取消</button>
     <button class="btn btn-primary" style="flex:1.6;" onclick="confirmMoveBatch()">确认发起移仓</button>
   </div>
@@ -849,6 +875,26 @@ function statusTag(status) {
   var tone = Object.prototype.hasOwnProperty.call(TONE, status) ? TONE[status] : '';
   return '<span class="tag ' + (tone || 'muted') + '">' + (tone ? status : '—') + '</span>';
 }
+function packageListHeading(no, detailAction) {
+  return '<div class="list-row-heading"><div class="no lnk" onclick="' + detailAction + '('
+    + escapeRecordText(JSON.stringify(no)) + ')">' + escapeRecordText(no) + '</div></div>';
+}
+function packageListMetadata(type, palletId, context) {
+  var id = palletId == null ? '' : String(palletId).trim();
+  var hasPallet = id !== '' && id !== '—';
+  var meta = packageListContext(type && hasPallet ? type + ' ·' : type)
+    + (hasPallet ? '<span class="list-pallet" title="托盘ID">' + escapeRecordText(id) + '</span>' : '')
+    + context;
+  return meta ? '<div class="meta list-meta" tabindex="0" role="group" aria-label="包裹信息">' + meta + '</div>' : '';
+}
+function packageListContext(value) {
+  return value ? '<span class="list-meta-extra">' + escapeRecordText(value) + '</span>' : '';
+}
+
+var SEED_PALLET_IDS = {
+  '332855122': 'TP-250001', '332856501': 'TP-250002', '332848227': 'TP-250003',
+  '332946201': 'TP-250004', '332955101': 'TP-250005'
+};
 
 var PKGS = (function () {
   var goods = ['儿童积木套装', '轻量跑鞋', '羊毛针织衫', '家居用品', '蓝牙耳机', '运动水壶', '护颈枕', '速干T恤'];
@@ -874,7 +920,7 @@ var PKGS = (function () {
       out.push({
         no: no, tn: 'SF2611046' + (1020000 + seq * 137),
         cid: cids[seq % cids.length], goods: goods[seq % goods.length],
-        type: isTicket ? '整票' : '散包',
+        type: isTicket ? '整票' : '散包', palletId: SEED_PALLET_IDS[no] || '',
         pkgs: isTicket ? 1 : (1 + seq % 3),
         boxes: isTicket ? (1 + seq % 2) : 0,
         st: sd.st,
@@ -901,6 +947,7 @@ var PKGS = (function () {
     out.push({
       no: r[2], tn: 'SF2611046' + (1090000 + i), cid: cids[i % cids.length], goods: goods[i % goods.length],
       type: (i % 3 === 1) ? '整票' : '散包', pkgs: (i % 3 === 1) ? 1 : (1 + i % 3), boxes: (i % 3 === 1) ? (1 + i % 2) : 0,
+      palletId: SEED_PALLET_IDS[r[2]] || '',
       st: '移仓中', wh: '', forecastWh: r[0], loc: '', tm: (i % 2 === 0 ? D0 : D1) + ' ' + ('0' + (9 + i % 9)).slice(-2) + ':2' + (i % 6) + ':00',
       moveNo: 'MY' + (i % 2 === 0 ? D0 : D1).replace(/-/g, '') + ('0' + (20 + i)).slice(-2), fromWh: r[0], toWh: r[1],
       trace: [[((i % 2 === 0 ? D0 : D1) + ' ' + ('0' + (9 + i % 9)).slice(-2) + ':2' + (i % 6) + ':00'), r[0], '发起移仓 → ' + r[1], '移仓单 MY' + (i % 2 === 0 ? D0 : D1).replace(/-/g, '') + ('0' + (20 + i)).slice(-2)]]
@@ -934,7 +981,7 @@ var FC = (function () {
   ];
   return seeds.map(function (r, i) {
     return {
-      no: r[0], tn: 'SF2611046' + (1021000 + i * 37), type: r[1], qty: r[2], cid: r[3],
+      no: r[0], tn: 'SF2611046' + (1021000 + i * 37), type: r[1], qty: r[2], cid: r[3], palletId: SEED_PALLET_IDS[r[0]] || '',
       st: r[4], operator: r[4] === '已预报' ? '张伟' : '',
       tm: _D0 + ' ' + ('0' + (9 + i % 8)).slice(-2) + ':' + ('0' + (15 + i * 6) % 60).slice(-2) + ':00',
       fwdTm: r[4] === '已预报' ? (_D0 + ' 10:0' + i + ':00') : ''
@@ -943,9 +990,9 @@ var FC = (function () {
 })();
 
 var SEED_SIGNED = [
-  { no: '332860638', loc: 'A-02-03', tm: _D0 + ' 09:12:00', mv: 'MY20261119012' },
-  { no: 'XY202600151', loc: 'A-01-01', tm: _D0 + ' 08:40:00', mv: 'MY20261119008' },
-  { no: '332855122', loc: 'B-01-02', tm: _D1 + ' 16:20:00', mv: 'MY20261118006' }
+  { no: '332860638', loc: 'A-02-03', tm: _D0 + ' 09:12:00', mv: 'MY20261119012', type: '散包' },
+  { no: 'XY202600151', loc: 'A-01-01', tm: _D0 + ' 08:40:00', mv: 'MY20261119008', type: '整票' },
+  { no: '332855122', loc: 'B-01-02', tm: _D1 + ' 16:20:00', mv: 'MY20261118006', type: '散包', palletId: SEED_PALLET_IDS['332855122'] }
 ];
 
 var S = { user: null, page: 'login', mode: 'move', inPkg: null, outPkgs: [], outTo: '', srPkg: null, pkBox: null, signedLog: SEED_SIGNED.slice(), inLog: [], lastIn: null, dtPkg: null, warehouseRecord: null, prevPage: 'in', pickedIn: {}, allSignLog: null,
@@ -1153,9 +1200,11 @@ function notFoundCard(kind, no, title, desc, actions) {
     + '</div>';
 }
 function createPkg(opt) {
+  var forecast = findFc(opt.no);
   var p = {
     no: opt.no, tn: opt.tn || '', cid: opt.cid || '—', goods: opt.goods || '未登记物品',
     type: opt.type || '散包', pkgs: opt.pkgs || 1, boxes: opt.boxes || 0,
+    palletId: opt.palletId || (forecast && forecast.st === '已预报' && forecast.palletId) || '',
     st: opt.st || '待入库', wh: opt.wh || '', forecastWh: opt.forecastWh || '',
     loc: opt.loc || '', tm: nowStr(), moveNo: '', fromWh: '', toWh: '',
     trace: [[nowStr(), opt.wh || opt.forecastWh || '—', opt.traceTitle || '手动登记', opt.traceDesc || 'PDA 手动登记单号']]
@@ -1227,17 +1276,14 @@ function renderFc() {
   var allOn = pickableList.length > 0 && pickedCnt === Math.min(pickableList.length, 30);
 
   var rows = list.slice(0, 40).map(function (r, k) {
-    var meta = r.type + ' · ' + r.qty + ' 件　客户 ' + (r.cid || '—');
-    if (r.st === '已预报') {
-      meta += (r.tn ? ('　' + r.tn) : '') + (r.forecastWh ? ('　' + r.forecastWh) : '') + (r.remark ? ('　' + r.remark) : '');
-    }
+    var context = r.st === '已预报' ? [r.tn, r.forecastWh, r.remark].map(packageListContext).join('') : '';
     var canPick = pickable && r.st === '未预报';
-    return '<div class="pl-item">'
+    return '<div class="pl-item pallet-list-row">'
       + (canPick
         ? ('<input type="checkbox" class="chk" data-fc="' + r.no + '" ' + (picked[r.no] ? 'checked' : '') + ' onchange="toggleFcPick(\'' + r.no + '\')">')
         : ('<span class="idx">' + (k + 1) + '</span>'))
-      + '<div style="min-width:0;"><div class="no lnk" onclick="openFcDetail(\'' + r.no + '\')">' + r.no + '</div>'
-      + '<div class="meta">' + meta + '</div></div>'
+      + packageListHeading(r.no, 'openFcDetail')
+      + packageListMetadata(r.type, r.palletId, context)
       + '<div class="rt"><div class="t">' + (r.tm || '').slice(5, 16) + '</div>'
       + statusTag(r.st) + '</div>'
       + '</div>';
@@ -1471,6 +1517,8 @@ function openFcFwd(single) {
     if (showNo) $('fwdPkgNo').value = first.no || '';
   }
   $('fwdTn').value = first.tn || '';
+  $('fwdPalletWrap').hidden = !!single;
+  $('fwdPalletId').value = '';
   $('fwdRemark').value = first.remark || '';
   S.fwdType = first.type || '散包';
   document.querySelectorAll('#fwdTypeSeg button').forEach(function (bt) {
@@ -1524,6 +1572,7 @@ function confirmFcFwd() {
   var tn = ($('fwdTn').value || '').trim();
   var wh = ($('fwdWh').value || '');
   var remark = ($('fwdRemark').value || '').trim();
+  var palletId = draft.batch ? $('fwdPalletId').value.trim() : '';
   var editing = (S.fcModalMode === 'edit');
   if (!wh) { toast('请选择预报仓库', 'err'); return; }
   if (wh === u.wh) { toast('预报仓库不能是当前作业仓（' + u.wh + '）', 'err'); return; }
@@ -1552,6 +1601,11 @@ function confirmFcFwd() {
     r.type = type;
     r.forecastWh = wh;
     r.remark = remark;
+    if (palletId) {
+      r.palletId = palletId;
+      var p = findPkg(r.no);
+      if (p) p.palletId = palletId;
+    }
     if (draft.batch) {
       var existing = r.photos || [];
       var added = draft.photos.filter(function (photo) {
@@ -1600,6 +1654,7 @@ function scanFc() {
   }
   FC.unshift({
     no: no, tn: (p && p.tn) || '', type: type, qty: qty, cid: cid,
+    palletId: (p && p.palletId) || '',
     st: '未预报', tm: nowStr(), fwdTm: '', operator: ''
   });
   S.fcTab = 'today'; S.fcSt = '未预报';
@@ -1658,18 +1713,14 @@ function renderIn() {
   var pickedCnt = list.filter(function (x) { return picked[x.no]; }).length;
   var allOn = list.length > 0 && pickedCnt === Math.min(list.length, 30);
   var rows = list.slice(0, 40).map(function (pk, i) {
-    var qty = (pk.type === '整票') ? (pk.boxes + ' 箱') : (pk.pkgs + ' 件');
     var inboundBox = findInboundBox(pk);
-    var typeAndQuantity = pk.type + ' · ' + qty;
-    var location = pk.loc || '—';
-    var meta = inboundBox
-      ? '<div class="meta in-box-row"><span>' + typeAndQuantity + '</span> <span>' + location + '</span>'
-        + ' <span class="in-box-meta" title="装箱单">' + escapeRecordText(inboundBox.no) + '</span></div>'
-      : '<div class="meta">' + typeAndQuantity + '　' + location + '</div>';
-    return '<div class="pl-item">'
+    var location = escapeRecordText(pk.loc || '—');
+    var placement = '<span class="list-box-line">' + location
+      + (inboundBox ? ' <span class="in-box-meta" title="装箱单">' + escapeRecordText(inboundBox.no) + '</span>' : '') + '</span>';
+    return '<div class="pl-item pallet-list-row">'
       + '<input type="checkbox" class="chk" data-no="' + pk.no + '" ' + (picked[pk.no] ? 'checked' : '') + ' onchange="togglePickIn(\'' + pk.no + '\')">'
-      + '<div style="min-width:0;"><div class="no lnk" onclick="openPkgDetail(\'' + pk.no + '\')">' + pk.no + '</div>'
-      + meta + '</div>'
+      + packageListHeading(pk.no, 'openPkgDetail')
+      + packageListMetadata(pk.type, pk.palletId, placement)
       + '<div class="rt"><div class="t">' + (pk.tm || '').slice(5, 16) + '</div>' + statusTag('在库') + '</div>'
       + '</div>';
   }).join('');
@@ -2099,7 +2150,7 @@ function detailSign() {
   p.trace.unshift([p.tm, u.wh, '目的仓签收入库', '移仓单 ' + mv + ' 完成，货位 ' + loc + '，操作人 ' + u.name]);
   p.fromWh = ''; p.toWh = ''; p.moveNo = '';
   S.stats.sign++;
-  S.signedLog.unshift({ no: p.no, loc: loc, tm: nowStr(), mv: mv });
+  S.signedLog.unshift({ no: p.no, loc: loc, tm: nowStr(), mv: mv, type: p.type, palletId: p.palletId });
   buzz(40);
   toast('已签收 · ' + p.no + ' → ' + loc, 'ok');
   renderDetail(); renderHome(); renderOut();
@@ -2420,10 +2471,10 @@ function renderOut() {
 
     function signLogRows(list) {
       return list.slice(0, 40).map(function (r) {
-        return '<div class="picked">'
+        return '<div class="picked pallet-list-row">'
           + '<span class="idx" style="color:#0E7C3A;font-weight:700;">✓</span>'
-          + '<div style="min-width:0;"><div class="no lnk" onclick="openPkgDetail(\'' + r.no + '\')">' + r.no + '</div>'
-          + '<div class="meta">' + r.mv + '　' + r.loc + '</div></div>'
+          + packageListHeading(r.no, 'openPkgDetail')
+          + packageListMetadata(r.type, r.palletId, packageListContext(r.mv) + packageListContext(r.loc))
           + '<div class="rt"><div class="t">' + (r.tm || '').slice(5, 16) + '</div>' + statusTag('已签收') + '</div>'
           + '</div>';
       }).join('') || '<div style="font-size:11.5px;color:var(--ink-3);padding:6px 0 8px;">' + (S.outTab === 'all' ? '暂无签收记录' : '今日还没有签收记录') + '</div>';
@@ -2450,11 +2501,10 @@ function renderOut() {
       var pickedCnt = toSign.filter(function (x) { return picked[x.no]; }).length;
       var allOn = toSign.length > 0 && pickedCnt === Math.min(toSign.length, 30);
       var waitRows = toSign.slice(0, 30).map(function (pk) {
-        var qty = (pk.type === '整票') ? (pk.boxes + ' 箱') : (pk.pkgs + ' 件');
-        return '<div class="pl-item">'
+        return '<div class="pl-item pallet-list-row">'
           + '<input type="checkbox" class="chk" data-no="' + pk.no + '" ' + (picked[pk.no] ? 'checked' : '') + ' onchange="togglePick(\'' + pk.no + '\')">'
-          + '<div style="min-width:0;"><div class="no lnk" onclick="openPkgDetail(\'' + pk.no + '\')">' + pk.no + '</div>'
-          + '<div class="meta">' + pk.type + ' · ' + qty + '　' + (pk.fromWh || '') + ' → 本仓' + (pk.moveNo ? '　' + pk.moveNo : '') + '</div></div>'
+          + packageListHeading(pk.no, 'openPkgDetail')
+          + packageListMetadata(pk.type, pk.palletId, packageListContext((pk.fromWh || '') + ' → 本仓') + packageListContext(pk.moveNo))
           + '<div class="rt"><div class="t">' + (pk.tm || '').slice(5, 16) + '</div>'
           + statusTag('待签收') + '</div>'
           + '</div>';
@@ -2502,10 +2552,10 @@ function renderOut() {
   /* ---- 发起模式：有清单时进入操作视图 ---- */
   if (S.outView === 'op' && S.outPkgs.length) {
     var rows = S.outPkgs.map(function (p, i) {
-      var qty = (p.type === '整票') ? (p.boxes + ' 箱') : (p.pkgs + ' 件');
-      return '<div class="picked">'
+      return '<div class="picked pallet-list-row pallet-queue-row">'
         + '<span class="idx">' + (i + 1) + '</span>'
-        + '<div><div class="no lnk" onclick="openPkgDetail(\'' + p.no + '\')">' + p.no + '</div><div class="meta">' + p.type + ' · ' + qty + '　' + (p.wh || '') + ' · ' + (p.loc || '—') + '</div></div>'
+        + packageListHeading(p.no, 'openPkgDetail')
+        + packageListMetadata(p.type, p.palletId, packageListContext((p.wh || '') + ' · ' + (p.loc || '—')))
         + statusTag('待转运')
         + '<button class="rm" onclick="removeOutPkg(' + i + ')">移除</button>'
         + '</div>';
@@ -2534,11 +2584,10 @@ function renderOut() {
   var allOn = list.length > 0 && pickedCnt === Math.min(list.length, 30);
 
   var rows = list.slice(0, 30).map(function (pk, i) {
-    var qty = (pk.type === '整票') ? (pk.boxes + ' 箱') : (pk.pkgs + ' 件');
-    return '<div class="pl-item">'
+    return '<div class="pl-item pallet-list-row">'
       + '<input type="checkbox" class="chk" data-out="' + pk.no + '" ' + (pickedOut[pk.no] ? 'checked' : '') + ' onchange="toggleOutPick(\'' + pk.no + '\')">'
-      + '<div style="min-width:0;"><div class="no lnk" onclick="openPkgDetail(\'' + pk.no + '\')">' + pk.no + '</div>'
-      + '<div class="meta">' + pk.type + ' · ' + qty + '　→ ' + (pk.toWh || '—') + (pk.moveNo ? '　' + pk.moveNo : '') + '</div></div>'
+      + packageListHeading(pk.no, 'openPkgDetail')
+      + packageListMetadata(pk.type, pk.palletId, packageListContext('→ ' + (pk.toWh || '—')) + packageListContext(pk.moveNo))
       + '<div class="rt"><div class="t">' + (pk.tm || '').slice(5, 16) + '</div>'
       + statusTag('移仓中') + '</div>'
       + '</div>';
@@ -2665,14 +2714,13 @@ function pickBar(mode, list) {
 function rowsTemp(u, list, mode, pickable) {
   var picked = S.pickedIn || {};
   var rows = list.slice(0, 30).map(function (pk, i) {
-    var qty = (pk.type === '整票') ? (pk.boxes + ' 箱') : (pk.pkgs + ' 件');
     var dest = (mode === 'sign') ? (pk.fromWh + ' → 本仓') : (mode === 'stock' ? ('货位 ' + (pk.loc || '—')) : ('→ ' + (pk.toWh || '—')));
     var status = mode === 'stock' ? '在库' : (mode === 'sign' ? '待签收' : '移仓中');
     var right = '<div class="t">' + (pk.tm || '').slice(5, 16) + '</div>' + statusTag(status);
-    return '<div class="pl-item">'
+    return '<div class="pl-item pallet-list-row">'
       + (pickable ? ('<input type="checkbox" class="chk" data-no="' + pk.no + '" ' + (picked[pk.no] ? 'checked' : '') + ' onchange="togglePick(\'' + pk.no + '\')">') : ('<span class="idx">' + (i + 1) + '</span>'))
-      + '<div style="min-width:0;"><div class="no lnk" onclick="openPkgDetail(\'' + pk.no + '\')">' + pk.no + '</div>'
-      + '<div class="meta">' + pk.type + ' · ' + qty + '　' + dest + (mode !== 'stock' && pk.moveNo ? '　' + pk.moveNo : '') + '</div></div>'
+      + packageListHeading(pk.no, 'openPkgDetail')
+      + packageListMetadata(pk.type, pk.palletId, packageListContext(dest) + packageListContext(mode !== 'stock' ? pk.moveNo : ''))
       + '<div class="rt">' + right + '</div>'
       + '</div>';
   }).join('');
@@ -2706,14 +2754,13 @@ function pendingCard(u, mode, withPick) {
   var allOn = list.length > 0 && pickedCount === Math.min(list.length, 30);
 
   var rows = list.slice(0, 30).map(function (pk, i) {
-    var qty = (pk.type === '整票') ? (pk.boxes + ' 箱') : (pk.pkgs + ' 件');
     var dest = (mode === 'sign') ? (pk.fromWh + ' → 本仓') : (mode === 'stock' ? ('货位 ' + (pk.loc || '—')) : ('→ ' + (pk.toWh || '—')));
     var status = mode === 'stock' ? '在库' : (mode === 'sign' ? '待签收' : '移仓中');
     var right = '<div class="t">' + (pk.tm || '').slice(5, 16) + '</div>' + statusTag(status);
-    return '<div class="pl-item">'
+    return '<div class="pl-item pallet-list-row">'
       + (pickable ? ('<input type="checkbox" class="chk" data-no="' + pk.no + '" ' + (picked[pk.no] ? 'checked' : '') + ' onchange="togglePick(\'' + pk.no + '\')">') : ('<span class="idx">' + (i + 1) + '</span>'))
-      + '<div style="min-width:0;"><div class="no lnk" onclick="openPkgDetail(\'' + pk.no + '\')">' + pk.no + '</div>'
-      + '<div class="meta">' + pk.type + ' · ' + qty + '　' + dest + (mode !== 'stock' && pk.moveNo ? '　' + pk.moveNo : '') + '</div></div>'
+      + packageListHeading(pk.no, 'openPkgDetail')
+      + packageListMetadata(pk.type, pk.palletId, packageListContext(dest) + packageListContext(mode !== 'stock' ? pk.moveNo : ''))
       + '<div class="rt">' + right + '</div>'
       + '</div>';
   }).join('');
@@ -2797,7 +2844,7 @@ function batchSignFromList() {
     p.trace.unshift([p.tm, u.wh, '目的仓签收入库', '移仓单 ' + mv + ' 完成，货位 ' + loc + '，操作人 ' + u.name]);
     p.fromWh = ''; p.toWh = ''; p.moveNo = '';
     S.stats.sign++;
-    S.signedLog.unshift({ no: p.no, loc: loc, tm: nowStr(), mv: mv });
+    S.signedLog.unshift({ no: p.no, loc: loc, tm: nowStr(), mv: mv, type: p.type, palletId: p.palletId });
     n++;
   });
   S.pickedIn = {};
@@ -2825,12 +2872,14 @@ function openWhSheet() {
   $('mvTime').value = dtLocalVal(0);
   $('mvEta').value = dtLocalVal(3);
   $('mvType').value = '中转移仓';
+  $('mvPalletId').value = '';
   $('mvReason').value = '';
   $('mvRemark').value = '';
   clearTimeout(toastTimer);
   $('toast').className = 'toast';
   $('sheetMask').classList.add('show');
   $('whSheetPanel').classList.add('show');
+  $('whSheetFields').scrollTop = 0;
   document.getElementById('device').classList.add('sheet-open');
 }
 function dtLocalVal(offsetDays) {
@@ -2860,6 +2909,7 @@ function confirmMoveBatch() {
   var etaLocal = ($('mvEta').value || '');
   var reason = ($('mvReason').value || '').trim();
   var remark = ($('mvRemark').value || '').trim();
+  var palletId = $('mvPalletId').value.trim();
   if (!mv) { toast('请填写移仓编号', 'err'); return; }
   if (!tmLocal) { toast('请选择移仓时间', 'err'); return; }
   var n = S.outPkgs.length;
@@ -2869,8 +2919,9 @@ function confirmMoveBatch() {
     p.st = '移仓中'; p.moveNo = mv; p.moveType = mtype;
     p.fromWh = u.wh; p.toWh = S.outTo; p.tm = mvTime;
     p.eta = etaStr; p.remark = remark;
+    if (palletId) p.palletId = palletId;
     addWarehouseRecord(p, { type: 'move', reason: reason, remark: remark, time: mvTime, operator: u.name, wh: u.wh, moveNo: mv,
-      moveType: mtype, fromWh: u.wh, toWh: S.outTo, eta: etaStr });
+      moveType: mtype, fromWh: u.wh, toWh: S.outTo, eta: etaStr, palletId: p.palletId || '' });
     p.trace.unshift([mvTime, u.wh, '发起移仓 → ' + S.outTo,
       '移仓单 ' + mv + '（批量 ' + n + ' 件），' + mtype + (etaStr ? ('，预计到达 ' + etaStr.slice(5, 16)) : '')
         + (reason ? ('，原因：' + reason) : '') + (remark ? ('；' + remark) : '') + '，操作人 ' + u.name]);
@@ -2947,7 +2998,7 @@ function scanOut() {
     p.trace.unshift([p.tm, u.wh, '目的仓签收入库', '移仓单 ' + mv + ' 完成，货位 ' + loc + '，操作人 ' + u.name]);
     p.fromWh = ''; p.toWh = ''; p.moveNo = '';
     S.stats.sign++;
-    S.signedLog.unshift({ no: p.no, loc: loc, tm: nowStr(), mv: mv });
+    S.signedLog.unshift({ no: p.no, loc: loc, tm: nowStr(), mv: mv, type: p.type, palletId: p.palletId });
     $('outScan').value = '';
     buzz(40);
     toast('已签收 · ' + p.no + ' → ' + loc, 'ok');
