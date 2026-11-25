@@ -282,8 +282,41 @@
   .modal-hd{display:flex;align-items:center;margin-bottom:12px;}
   .modal-hd .t{font-size:15px;font-weight:700;}
   .modal-hd .s{margin-left:auto;font-size:11px;color:var(--ink-3);}
+  #fcFwdTitle:focus{outline:none;}
   .modal-box .wh-grid{gap:8px;}
   .modal-box .wh-opt{padding:10px 8px;border-radius:11px;}
+  #fcFwdPanel{max-height:calc(100% - 28px);}
+  #fcFwdPanel .fwd-field-label{font-size:10.5px;color:var(--ink-3);margin:10px 0 5px;}
+  #fcFwdPanel .modal-hd+.fwd-field-label,#fwdNoWrap .fwd-field-label{margin-top:0;}
+  .fwd-photos{margin-top:12px;}
+  .fwd-photo-hd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;}
+  .fwd-photo-hd label{font-size:11px;font-weight:650;color:var(--ink);}
+  .fwd-photo-count,.fwd-photo-help{font-size:10.5px;color:#536D83;}
+  .fwd-photo-help{margin-top:6px;line-height:1.45;overflow-wrap:anywhere;}
+  .fwd-photo-error{margin-top:6px;color:var(--danger);font-size:11px;line-height:1.45;}
+  .fwd-photo-error:empty{display:none;}
+  .fwd-photo-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;}
+  .fwd-photo-tiles{display:contents;}
+  .fwd-photo-tile{position:relative;display:block;min-width:0;aspect-ratio:1;border-radius:10px;background:var(--brand-tint);}
+  .fwd-photo-link,.fwd-photo-link img{display:block;width:100%;height:100%;border-radius:inherit;}
+  .fwd-photo-link img{object-fit:cover;}
+  .fwd-photo-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;aspect-ratio:1;border:1px dashed #ADC8DB;
+    border-radius:10px;background:#F4F9FC;color:var(--brand);font:inherit;font-weight:650;font-size:12px;cursor:pointer;}
+  .fwd-photo-add[hidden]{display:none;}
+  .fwd-photo-tiles:empty+.fwd-photo-add{grid-column:1 / -1;aspect-ratio:auto;min-height:54px;}
+  .fwd-photo-tiles:not(:empty)+.fwd-photo-add span{display:none;}
+  .fwd-photo-add .ui-icon{width:17px;height:17px;}
+  .fwd-photo-add:disabled{color:#536D83;cursor:default;}
+  .fwd-photo-remove{position:absolute;top:2px;right:2px;display:grid;place-items:center;width:24px;height:24px;
+    padding:0;border:0;border-radius:50%;background:rgba(18,45,67,.88);color:#fff;font:600 16px/1 sans-serif;cursor:pointer;}
+  .fwd-photo-add:focus-visible,.fwd-photo-remove:focus-visible,.fwd-photo-link:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px;}
+  @media(max-height:650px){
+    #fcFwdPanel{padding-block:12px;}
+    #fcFwdPanel .modal-hd{margin-bottom:8px;}
+    #fcFwdPanel .fwd-field-label{margin-top:7px;}
+    .fwd-photos{margin-top:8px;}
+    .fwd-photo-tiles:empty+.fwd-photo-add{min-height:52px;}
+  }
 
   /* ===== 底部选择面板 ===== */
   .sheet-mask{position:absolute;inset:0;background:rgba(15,23,42,.42);opacity:0;pointer-events:none;transition:.2s;z-index:20;}
@@ -358,6 +391,13 @@
   .pl-item .idx{width:18px;font-size:10.5px;color:var(--ink-3);flex:none;font-variant-numeric:tabular-nums;}
   .pl-item .no{font-size:12.5px;font-weight:700;letter-spacing:.2px;font-variant-numeric:tabular-nums;}
   .pl-item .meta{font-size:10.5px;color:var(--ink-3);margin-top:2px;}
+  .pl-item .meta.in-box-row{display:flex;align-items:baseline;gap:5px;white-space:nowrap;}
+  .in-box-meta{color:var(--ink-2);font-variant-numeric:tabular-nums;}
+  @media(max-width:350px){
+    #inBody .pl-item:has(.in-box-row){column-gap:5px;}
+    #inBody .pl-item:has(.in-box-row) > .chk{margin-right:4px;}
+    #inBody .meta.in-box-row{gap:3px;font-size:10px;letter-spacing:-.12px;}
+  }
   .pl-item .rt,.picked .rt{margin-left:auto;text-align:right;flex:none;}
   .pl-item .rt .t,.picked .rt .t{font-size:10px;color:var(--ink-3);font-variant-numeric:tabular-nums;}
   .pl-item .rt .tag,.picked .rt .tag{margin-top:3px;}
@@ -419,6 +459,7 @@
 <svg class="icon-library" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
   <symbol id="pda-icon-dashboard" viewBox="0 0 24 24"><rect class="ui-icon-fill" x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></symbol>
   <symbol id="pda-icon-report" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 11h6m-6 4h4"/><rect class="ui-icon-fill" x="9" y="3" width="6" height="4" rx="1.2"/></symbol>
+  <symbol id="pda-icon-camera" viewBox="0 0 24 24"><path d="M4 9a2 2 0 0 1 2-2h2l1.5-2h5L16 7h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3"/></symbol>
   <symbol id="pda-icon-inbox" viewBox="0 0 24 24"><path d="M12 3.5v10m-3.5-3.5 3.5 3.5 3.5-3.5"/><rect class="ui-icon-fill" x="3.75" y="16" width="16.5" height="4.5" rx="1.6"/><path d="M7.2 18.25h2"/></symbol>
   <symbol id="pda-icon-truck" viewBox="0 0 24 24"><path d="M3 16V8a1.5 1.5 0 0 1 1.5-1.5H13V16m0-6h3.9l3.6 3.6V16h-2.1M3 16h2m4 0h5.4"/><circle class="ui-icon-fill" cx="7" cy="16.5" r="2"/><circle class="ui-icon-fill" cx="16.4" cy="16.5" r="2"/></symbol>
   <symbol id="pda-icon-parcel" viewBox="0 0 24 24"><path class="ui-icon-fill" d="M12 3.4 20 7.8v8.4l-8 4.4-8-4.4V7.8z"/><path d="M4.3 8 12 12.2 19.7 8M12 12.2v8.1M8.2 5.5l7.7 4.2"/></symbol>
@@ -710,26 +751,38 @@
 </div>
 
 <div class="modal-mask" id="fcFwdMask" onclick="closeFcFwd()"></div>
-<div class="modal-box" id="fcFwdPanel">
-  <div class="modal-hd"><span class="t">批量预报发运</span><span class="s" id="fcFwdSub">共 0 件</span></div>
-  <div id="fwdNoWrap" style="display:none;margin-bottom:10px;">
-    <div style="font-size:10.5px;color:var(--ink-3);margin-bottom:5px;">包裹订单号 <span style="color:#B42318;">*</span></div>
+<div class="modal-box" id="fcFwdPanel" role="dialog" aria-modal="true" aria-labelledby="fcFwdTitle" inert onkeydown="if(event.key==='Escape') closeFcFwd()">
+  <div class="modal-hd"><span class="t" id="fcFwdTitle" tabindex="-1">批量预报发运</span><span class="s" id="fcFwdSub">共 0 件</span></div>
+  <div id="fwdNoWrap" style="display:none;">
+    <div class="fwd-field-label">包裹订单号 <span style="color:#B42318;">*</span></div>
     <input class="input code" id="fwdPkgNo" placeholder="修改包裹订单号" style="height:38px;font-size:13px;padding:0 10px;">
   </div>
-  <div style="font-size:10.5px;color:var(--ink-3);margin-bottom:5px;">发运单号</div>
+  <div class="fwd-field-label">发运单号</div>
   <input class="input code" id="fwdTn" placeholder="多个包裹共用此发运单号" style="height:38px;font-size:13px;padding:0 10px;">
-  <div style="font-size:10.5px;color:var(--ink-3);margin:10px 0 5px;">类型</div>
+  <div class="fwd-field-label">类型</div>
   <div class="segmented" id="fwdTypeSeg" style="margin-bottom:0;">
     <button class="on" onclick="fwdTypeSel('散包')">散包</button>
     <button onclick="fwdTypeSel('整票')">整票</button>
   </div>
-  <div style="font-size:10.5px;color:var(--ink-3);margin:10px 0 5px;">预报仓库</div>
+  <div class="fwd-field-label">预报仓库</div>
   <select class="input" id="fwdWh" style="height:38px;font-size:13px;padding:0 9px;"></select>
-  <div style="font-size:10.5px;color:var(--ink-3);margin:10px 0 5px;">备注</div>
+  <div class="fwd-field-label">备注</div>
   <input class="input" id="fwdRemark" placeholder="选填，如 客户要求周五前发运" style="height:38px;font-size:13px;padding:0 10px;">
+  <div class="fwd-photos" id="fwdPhotos">
+    <div class="fwd-photo-hd"><label for="fwdPhotoInput">发运图片</label><span class="fwd-photo-count" id="fwdPhotoCount" aria-live="polite">0/4</span></div>
+    <input type="file" id="fwdPhotoInput" accept="image/jpeg,image/png,image/webp" multiple hidden onchange="selectFcFwdPhotos(this)">
+    <div class="fwd-photo-grid">
+      <div class="fwd-photo-tiles" id="fwdPhotoGrid"></div>
+      <button type="button" class="fwd-photo-add" id="fwdPhotoAdd" onclick="$('fwdPhotoInput').click()" aria-label="添加图片" aria-describedby="fwdPhotoHelp">
+        <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#pda-icon-camera"/></svg><span>添加图片</span>
+      </button>
+    </div>
+    <div class="fwd-photo-help" id="fwdPhotoHelp">选填，支持 JPG、PNG、WebP，单张不超过 10 MB</div>
+    <div class="fwd-photo-error" id="fwdPhotoError" role="status"></div>
+  </div>
   <div style="display:flex;gap:9px;margin-top:14px;">
     <button class="btn btn-ghost" style="flex:1;" onclick="closeFcFwd()">取消</button>
-    <button class="btn btn-primary" style="flex:1.6;" onclick="confirmFcFwd()">确认预报</button>
+    <button class="btn btn-primary" id="fcFwdConfirm" style="flex:1.6;" onclick="confirmFcFwd()">确认预报</button>
   </div>
 </div>
 
@@ -861,6 +914,7 @@ var _D0 = _dd.getFullYear() + '-' + _pp(_dd.getMonth() + 1) + '-' + _pp(_dd.getD
 var _dd1 = new Date(Date.now() - 86400000);
 var _D1 = _dd1.getFullYear() + '-' + _pp(_dd1.getMonth() + 1) + '-' + _pp(_dd1.getDate());
 var BOXES = [
+  { no: 'XA202611250001', wh: '青源仓', st: '已入库', pkgs: ['332855122'], loc: 'A-01-01', inTime: _D0 + ' 15:16:00', operator: '张伟', tm: _D0 + ' 15:16:00' },
   { no: 'XA20261119001', wh: '青源仓', st: '未入库', pkgs: ['SF26110461030031', 'SF26110461030032', 'SF26110461030033'], loc: '', inTime: '', operator: '', tm: _D0 + ' 09:17:00' },
   { no: 'XA20261119002', wh: '青源仓', st: '未入库', pkgs: ['SF26110461030041', 'SF26110461030042'], loc: '', inTime: '', operator: '', tm: _D1 + ' 10:24:00' },
   { no: 'XA20261119003', wh: '青源仓', st: '已入库', pkgs: ['SF26110461030051', 'SF26110461030052'], loc: 'A-01-01', inTime: _D0 + ' 08:31:00', operator: '张伟', tm: _D0 + ' 08:31:00' },
@@ -895,7 +949,7 @@ var SEED_SIGNED = [
 ];
 
 var S = { user: null, page: 'login', mode: 'move', inPkg: null, outPkgs: [], outTo: '', srPkg: null, pkBox: null, signedLog: SEED_SIGNED.slice(), inLog: [], lastIn: null, dtPkg: null, warehouseRecord: null, prevPage: 'in', pickedIn: {}, allSignLog: null,
-  inView: 'list', packView: 'list', outView: 'list', inTab: 'today', packTab: 'today', outTab: 'today', fcTab: 'today', fcSt: 'all', fcSel: {}, fwdType: '散包', outSel: {}, outTransit: null, signTab: 'wait', signRange: 'today', srPkg: null, stats: { in: 0, out: 0, sign: 0 } };
+  inView: 'list', packView: 'list', outView: 'list', inTab: 'today', packTab: 'today', outTab: 'today', fcTab: 'today', fcSt: 'all', fcSel: {}, fwdType: '散包', fcPhotoDraft: null, outSel: {}, outTransit: null, signTab: 'wait', signRange: 'today', srPkg: null, stats: { in: 0, out: 0, sign: 0 } };
 var NF = { in: '', pack: '', out: '', search: '' };   // 未找到的单号（各页独立）
 
 function $(id) { return document.getElementById(id); }
@@ -1248,11 +1302,26 @@ function renderFcDetail() {
     + '<div class="info-cell"><div class="k">' + (isFwd ? '发运时间' : '状态') + '</div><div class="v">' + (isFwd ? (r.fwdTm || '—') : '未预报') + '</div></div>'
     + (r.remark ? ('<div class="info-cell" style="grid-column:span 2;"><div class="k">备注</div><div class="v">' + r.remark + '</div></div>') : '')
     + '</div></div>'
+    + renderFcPhotoCard(r)
     + '<div class="actionbar">'
     + '<button class="btn btn-ghost" onclick="goBack()" style="flex:1;">返回</button>'
     + (isFwd ? '' : ('<button class="btn btn-ghost" onclick="fcEdit()" style="flex:1;">编辑</button>'
         + '<button class="btn btn-primary btn-lg" onclick="fcFwdOne()" style="flex:1.3;">预报发运</button>'))
     + '</div>';
+}
+function renderFcPhotoLink(photo, index) {
+  var src = escapeRecordText(photo.url);
+  return '<a class="fwd-photo-link" href="' + src + '" target="_blank" rel="noopener" aria-label="查看发运图片 ' + (index + 1) + '">'
+    + '<img src="' + src + '" alt=""></a>';
+}
+function renderFcPhotoCard(r) {
+  var photos = r.photos || [];
+  if (!photos.length) return '';
+  return '<div class="card"><div class="card-hd"><span class="lead-ic"><svg class="ui-icon" aria-hidden="true"><use href="#pda-icon-camera"/></svg></span>'
+    + '<span class="ttl">发运图片</span><span class="sub">' + photos.length + ' 张</span></div>'
+    + '<div class="fwd-photo-grid" id="fcPhotoEvidence">' + photos.map(function (photo, index) {
+      return '<div class="fwd-photo-tile">' + renderFcPhotoLink(photo, index) + '</div>';
+    }).join('') + '</div></div>';
 }
 function fcEdit() {
   var r = S.fcDetail; if (!r) return;
@@ -1294,6 +1363,96 @@ function updateFcBar() {
   var all = document.querySelector('#fcBody .pickbar .all .chk');
   if (all) all.checked = (list.length > 0 && cnt === Math.min(list.length, 30));
 }
+var fcPhotoLimit = 4;
+var fcPhotoMaxBytes = 10 * 1024 * 1024;
+var fcPhotoTypes = ['image/jpeg', 'image/png', 'image/webp'];
+var fcPhotoHint = '选填，支持 JPG、PNG、WebP，单张不超过 10 MB';
+
+function renderFcFwdPhotos() {
+  var draft = S.fcPhotoDraft;
+  var photos = draft ? draft.photos : [];
+  var limit = draft ? draft.limit : fcPhotoLimit;
+  $('fwdPhotoCount').textContent = photos.length + '/' + limit;
+  $('fwdPhotoError').textContent = draft ? draft.error : '';
+  $('fwdPhotoHelp').textContent = limit === 0 ? '本批至少一件已有 4 张图片，可在预报详情中调整。'
+    : limit < fcPhotoLimit ? '现有图片将保留。本批可另加 ' + limit + ' 张，单张不超过 10 MB。' : fcPhotoHint;
+  $('fwdPhotoAdd').hidden = photos.length >= limit;
+  $('fwdPhotoAdd').disabled = !!(draft && draft.reading);
+  $('fcFwdConfirm').disabled = !!(draft && draft.reading);
+  $('fwdPhotoGrid').innerHTML = photos.map(function (photo, index) {
+    return '<div class="fwd-photo-tile">' + renderFcPhotoLink(photo, index)
+      + '<button type="button" class="fwd-photo-remove" aria-label="移除图片 ' + (index + 1)
+      + '" onclick="removeFcFwdPhoto(' + index + ')">×</button></div>';
+  }).join('');
+}
+function releaseFcFwdPhotos(photos) {
+  new Set(photos).forEach(function (photo) {
+    if (!FC.some(function (r) { return (r.photos || []).includes(photo); })) URL.revokeObjectURL(photo.url);
+  });
+}
+function resetFcFwdPhotos() {
+  var draft = S.fcPhotoDraft;
+  S.fcPhotoDraft = null;
+  if (draft) releaseFcFwdPhotos(draft.photos.concat(draft.original));
+  $('fwdPhotoInput').value = '';
+  renderFcFwdPhotos();
+}
+async function selectFcFwdPhotos(input) {
+  var draft = S.fcPhotoDraft;
+  var files = Array.from(input.files);
+  input.value = '';
+  if (!draft || draft.reading || !files.length) return;
+  draft.reading = true;
+  draft.error = '';
+  renderFcFwdPhotos();
+  var messages = new Set();
+  for (var file of files) {
+    var key = JSON.stringify([file.name, file.size, file.lastModified]);
+    if (draft.photos.some(function (photo) { return photo.key === key; })) {
+      messages.add('已跳过重复图片');
+      continue;
+    }
+    if (draft.photos.length >= draft.limit) {
+      messages.add('本次最多可选 ' + draft.limit + ' 张图片');
+      break;
+    }
+    if (!fcPhotoTypes.includes(file.type) || !file.size) {
+      messages.add('请选择 JPG、PNG 或 WebP 图片');
+      continue;
+    }
+    if (file.size > fcPhotoMaxBytes) {
+      messages.add('单张图片不能超过 10 MB');
+      continue;
+    }
+    var url = URL.createObjectURL(file);
+    var preview = new Image();
+    preview.src = url;
+    try {
+      await preview.decode();
+    } catch (error) {
+      URL.revokeObjectURL(url);
+      if (S.fcPhotoDraft !== draft) return;
+      messages.add('有图片无法预览，请重新选择');
+      continue;
+    }
+    if (S.fcPhotoDraft !== draft) {
+      URL.revokeObjectURL(url);
+      return;
+    }
+    draft.photos.push({ key: key, url: url });
+  }
+  draft.reading = false;
+  draft.error = Array.from(messages).join(' · ');
+  renderFcFwdPhotos();
+}
+function removeFcFwdPhoto(index) {
+  var draft = S.fcPhotoDraft;
+  if (!draft || !draft.photos[index]) return;
+  releaseFcFwdPhotos(draft.photos.splice(index, 1));
+  draft.error = '';
+  renderFcFwdPhotos();
+  $('fwdPhotoAdd').focus();
+}
 function openFcFwd(single) {
   if (!S.fcModalMode) S.fcModalMode = 'batch';
   var u = S.user;
@@ -1302,8 +1461,8 @@ function openFcFwd(single) {
   if (!S.fcModalMode) S.fcModalMode = 'batch';
   var editing = (S.fcModalMode === 'edit');
   var first = findFc(nos[0]) || {};
-  $('fcFwdPanel').querySelector('.t').textContent = editing ? '编辑预报' : (single ? '预报发运' : '批量预报发运');
-  $('fcFwdPanel').querySelector('.btn-primary').textContent = editing ? '保存修改' : '确认预报';
+  $('fcFwdTitle').textContent = editing ? '编辑预报' : (single ? '预报发运' : '批量预报发运');
+  $('fcFwdConfirm').textContent = editing ? '保存修改' : '确认预报';
   $('fcFwdSub').textContent = '共 ' + nos.length + ' 件';
   var noWrap = $('fwdNoWrap');
   if (noWrap) {
@@ -1323,18 +1482,32 @@ function openFcFwd(single) {
     return '<option value="' + w + '">' + w + '</option>';
   }).join('');
   wh.value = (first.forecastWh && opts.indexOf(first.forecastWh) >= 0) ? first.forecastWh : (opts[0] || '');
+  resetFcFwdPhotos();
+  var original = single ? (first.photos || []) : [];
+  var limit = single ? fcPhotoLimit : nos.reduce(function (available, no) {
+    var record = findFc(no);
+    return record && record.st !== '已预报' ? Math.min(available, fcPhotoLimit - (record.photos || []).length) : available;
+  }, fcPhotoLimit);
+  S.fcPhotoDraft = { photos: original.slice(), original: original, limit: limit, reading: false, error: '',
+    batch: !single, trigger: document.activeElement };
+  renderFcFwdPhotos();
   clearTimeout(toastTimer);
   $('toast').className = 'toast';
   $('fcFwdMask').classList.add('show');
+  $('fcFwdPanel').inert = false;
   $('fcFwdPanel').classList.add('show');
   document.getElementById('device').classList.add('sheet-open');
-  setTimeout(function () { var el = $('fwdTn'); if (el) el.focus(); }, 120);
+  $('fcFwdTitle').focus({ preventScroll: true });
 }
 function closeFcFwd() {
+  var trigger = S.fcPhotoDraft && S.fcPhotoDraft.trigger;
   $('fcFwdMask').classList.remove('show');
   $('fcFwdPanel').classList.remove('show');
+  $('fcFwdPanel').inert = true;
   document.getElementById('device').classList.remove('sheet-open');
   S.fcModalMode = null;
+  resetFcFwdPhotos();
+  if (trigger && trigger.isConnected) trigger.focus({ preventScroll: true });
 }
 function fwdTypeSel(t) {
   S.fwdType = t;
@@ -1344,6 +1517,8 @@ function fwdTypeSel(t) {
 }
 function confirmFcFwd() {
   var u = S.user;
+  var draft = S.fcPhotoDraft;
+  if (!draft || draft.reading) return;
   var nos = Object.keys(S.fcSel || {});
   if (!nos.length) { toast('请先勾选包裹', 'err'); return; }
   var tn = ($('fwdTn').value || '').trim();
@@ -1377,6 +1552,15 @@ function confirmFcFwd() {
     r.type = type;
     r.forecastWh = wh;
     r.remark = remark;
+    if (draft.batch) {
+      var existing = r.photos || [];
+      var added = draft.photos.filter(function (photo) {
+        return !existing.some(function (saved) { return saved.key === photo.key; });
+      });
+      if (added.length) r.photos = existing.concat(added).slice(0, fcPhotoLimit);
+    } else {
+      r.photos = draft.photos.slice();
+    }
     if (!editing) {
       r.st = '已预报';
       r.fwdTm = nowStr();
@@ -1475,10 +1659,17 @@ function renderIn() {
   var allOn = list.length > 0 && pickedCnt === Math.min(list.length, 30);
   var rows = list.slice(0, 40).map(function (pk, i) {
     var qty = (pk.type === '整票') ? (pk.boxes + ' 箱') : (pk.pkgs + ' 件');
+    var inboundBox = findInboundBox(pk);
+    var typeAndQuantity = pk.type + ' · ' + qty;
+    var location = pk.loc || '—';
+    var meta = inboundBox
+      ? '<div class="meta in-box-row"><span>' + typeAndQuantity + '</span> <span>' + location + '</span>'
+        + ' <span class="in-box-meta" title="装箱单">' + escapeRecordText(inboundBox.no) + '</span></div>'
+      : '<div class="meta">' + typeAndQuantity + '　' + location + '</div>';
     return '<div class="pl-item">'
       + '<input type="checkbox" class="chk" data-no="' + pk.no + '" ' + (picked[pk.no] ? 'checked' : '') + ' onchange="togglePickIn(\'' + pk.no + '\')">'
       + '<div style="min-width:0;"><div class="no lnk" onclick="openPkgDetail(\'' + pk.no + '\')">' + pk.no + '</div>'
-      + '<div class="meta">' + pk.type + ' · ' + qty + '　' + (pk.loc || '—') + '</div></div>'
+      + meta + '</div>'
       + '<div class="rt"><div class="t">' + (pk.tm || '').slice(5, 16) + '</div>' + statusTag('在库') + '</div>'
       + '</div>';
   }).join('');
@@ -1833,6 +2024,7 @@ function renderDetail() {
   var b = $('dtBody');
   if (!p) { b.innerHTML = emptyHtml(IC.search, '没有包裹数据', '请返回列表重新选择'); return; }
   var qty = (p.type === '整票') ? (p.boxes + ' 箱') : (p.pkgs + ' 件');
+  var inboundBox = findInboundBox(p);
   var toneMap = { '待入库': 'muted', '已入库': 'ok', '移仓中': 'warn', '待发货': 'info', '发货中': 'info', '已完成': 'ok', '异常件': 'danger' };
 
   var actions = [];
@@ -1858,6 +2050,7 @@ function renderDetail() {
     + '<div class="info-cell"><div class="k">物品</div><div class="v">' + (p.goods || '—') + '</div></div>'
     + '<div class="info-cell"><div class="k">所在仓库</div><div class="v">' + (p.wh || (p.st === '移仓中' ? (p.fromWh + ' → ' + p.toWh) : (p.forecastWh || '—'))) + '</div></div>'
     + '<div class="info-cell"><div class="k">货位</div><div class="v" style="color:' + (p.loc ? '#0E7C3A' : 'var(--ink-3)') + ';">' + (p.loc || '—') + '</div></div>'
+    + (inboundBox ? '<div class="info-cell" style="grid-column:1 / -1;"><div class="k">装箱单</div><div class="v">' + escapeRecordText(inboundBox.no) + '</div></div>' : '')
     + '<div class="info-cell"><div class="k">移仓单</div><div class="v">' + (p.moveNo || '—') + '</div></div>'
     + '<div class="info-cell"><div class="k">更新时间</div><div class="v">' + (p.tm || '—') + '</div></div>'
     + '</div></div>'
@@ -2019,6 +2212,12 @@ function findBox(no) {
   no = (no || '').trim();
   for (var i = 0; i < BOXES.length; i++) if (BOXES[i].no === no) return BOXES[i];
   return null;
+}
+function findInboundBox(p) {
+  if (p.st !== '已入库' || !['散包', '散件'].includes(p.type)) return null;
+  return BOXES.find(function (box) {
+    return box.st === '已入库' && box.wh === p.wh && (box.pkgs || []).includes(p.no);
+  });
 }
 function renderPack() {
   var u = S.user; if (!u) return;
