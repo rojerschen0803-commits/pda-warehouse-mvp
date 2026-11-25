@@ -615,7 +615,8 @@
     <div class="screen" id="scr-pack">
       <div class="scanbar">
         <svg class="ui-icon ico" aria-hidden="true" focusable="false"><use href="#pda-icon-parcel"/></svg>
-        <input class="input code" id="pkScan" placeholder="扫描或输入装箱号" onkeydown="if(event.key==='Enter')scanPack()" autocomplete="off">
+        <input class="input code" id="pkScan" placeholder="扫描或输入装箱号" aria-label="扫描或输入装箱号"
+          onkeydown="if(event.key==='Enter' && !event.isComposing)scanPack()" autocomplete="off">
         <button class="btn btn-primary btn-sm" onclick="scanPack()">识别</button>
       </div>
       <div id="pkBody"></div>
@@ -1110,7 +1111,7 @@ function go(name) {
   if (name === 'me') renderMe();
   if (name === 'fc') { S.fcTab = S.fcTab || 'today'; renderFc(); }
   if (name === 'in') { S.inPkg = null; S.newInForm = null; NF.in = ''; S.inView = 'list'; S.pickedIn = {}; renderIn(); }
-  if (name === 'pack') { S.pkBox = null; S.packView = 'list'; NF.pack = ''; renderPack(); }
+  if (name === 'pack') { backPackList(); }
   if (name === 'out') { S.outPkgs = []; S.outTo = ''; S.pickedIn = {}; S.outSel = {}; S.outTransit = null; S.outView = 'list'; NF.out = ''; closeWhSheet(); renderOut(); }
   if (name === 'search') { S.srPkg = null; NF.search = ''; renderSearch(); }
 }
@@ -2270,9 +2271,17 @@ function findInboundBox(p) {
     return box.st === '已入库' && box.wh === p.wh && (box.pkgs || []).includes(p.no);
   });
 }
+function editablePackBox() {
+  var box = S.pkBox;
+  return S.packView === 'op' && box && S.user && box.st === '未入库' && box.wh === S.user.wh ? box : null;
+}
 function renderPack() {
   var u = S.user; if (!u) return;
   var b = $('pkBody');
+  var scan = $('pkScan');
+  var editable = editablePackBox();
+  scan.placeholder = editable ? '扫描或输入包裹单号' : '扫描或输入装箱号';
+  scan.setAttribute('aria-label', scan.placeholder);
 
   /* ---- 操作视图 ---- */
   if (S.packView === 'op' && S.pkBox) {
@@ -2281,28 +2290,24 @@ function renderPack() {
     var listHtml = (box.pkgs || []).slice(0, 20).map(function (x, k) {
       return '<div style="display:flex;align-items:center;gap:9px;padding:8px 0;border-top:' + (k ? '1px solid var(--line-2)' : 'none') + ';">'
         + '<span style="width:18px;font-size:10.5px;color:var(--ink-3);font-variant-numeric:tabular-nums;">' + (k + 1) + '</span>'
-        + '<span style="flex:1;font-size:12.5px;font-weight:600;letter-spacing:.2px;">' + x + '</span>'
+        + '<span style="flex:1;min-width:0;overflow-wrap:anywhere;font-size:12.5px;font-weight:600;letter-spacing:.2px;">' + escapeRecordText(x) + '</span>'
         + statusTag(box.st === '已入库' ? '已入库' : '待入库') + '</div>';
     }).join('');
     b.innerHTML = backBar('返回列表', 'backPackList')
       + '<div class="card" style="padding:11px 12px;">'
       + '<div style="display:flex;align-items:center;gap:9px;">'
       + '<div style="min-width:0;flex:1;">'
-      + '<div style="display:flex;align-items:center;gap:7px;"><span class="pkg-no" style="font-size:15.5px;">' + box.no + '</span>' + statusTag(box.st) + '</div>'
+      + '<div style="display:flex;align-items:center;gap:7px;"><span class="pkg-no" style="font-size:15.5px;overflow-wrap:anywhere;">' + escapeRecordText(box.no) + '</span>' + statusTag(box.st) + '</div>'
       + '<div style="font-size:10.5px;color:var(--ink-3);margin-top:4px;">' + (box.wh || '—') + ' · ' + n + ' 件' + (box.loc ? ('　货位 ' + box.loc) : '') + '</div>'
       + '</div>'
       + '<span style="flex:none;font-size:10px;color:var(--ink-3);text-align:right;line-height:1.4;">装箱时间<br><b style="color:var(--ink-2);font-size:11px;font-weight:600;">' + ((box.inTime || box.tm || '—').slice(5, 16)) + '</b></span>'
       + '</div></div>'
       + '<div class="card">'
       + '<div class="card-hd"><span class="lead-ic">' + IC.box + '</span><span class="ttl">箱内包裹</span><span class="sub">' + (n > 20 ? ('前 20 / ' + n) : ('共 ' + n + ' 件')) + '</span></div>'
-      + (n ? listHtml : '<div style="font-size:11.5px;color:var(--ink-3);padding:4px 0 10px;">箱内还没有包裹，可在下方扫码加入</div>')
-      + (box.st === '未入库'
-        ? '<div style="display:flex;gap:8px;margin-top:10px;align-items:center;">'
-          + '<input class="input code" id="pkAdd" placeholder="扫包裹单号加入箱" style="flex:1;height:40px;font-size:13.5px;" onkeydown="if(event.key===\'Enter\')addPkgToBox()">'
-          + '<button class="btn btn-ghost btn-sm" style="height:40px;" onclick="addPkgToBox()">加入</button></div>'
-        : '')
+      + (n ? listHtml : '<div style="font-size:11.5px;color:var(--ink-3);padding:4px 0 10px;">箱内还没有包裹'
+        + (editable ? '，请在顶部扫描或输入包裹单号' : '') + '</div>')
       + '</div>'
-      + (box.st === '未入库'
+      + (editable
         ? '<div style="display:flex;gap:9px;margin-bottom:14px;">'
           + '<button class="btn btn-ghost btn-lg" onclick="whTempPack()" style="flex:1;">临时装箱</button>'
           + '<button class="btn btn-ok btn-lg" onclick="confirmPack()" style="flex:1.3;">装箱入库</button>'
@@ -2323,7 +2328,8 @@ function renderPack() {
     var cnt = (bx.pkgs || []).length;
     return '<div class="pl-item">'
       + '<span class="idx">' + (i + 1) + '</span>'
-      + '<div style="min-width:0;"><div class="no lnk" onclick="pickBox(\'' + bx.no + '\')">' + bx.no + '</div>'
+      + '<div style="min-width:0;"><div class="no lnk" style="overflow-wrap:anywhere;" onclick="pickBox('
+      + escapeRecordText(JSON.stringify(bx.no)) + ')">' + escapeRecordText(bx.no) + '</div>'
       + '<div class="meta">' + cnt + ' 件' + (bx.loc ? ('　货位 ' + bx.loc) : '') + '</div></div>'
       + '<div class="rt"><div class="t">' + ((bx.inTime || bx.tm || '—')).slice(5, 16) + '</div>'
       + statusTag(bx.st) + '</div>'
@@ -2337,75 +2343,87 @@ function renderPack() {
     + '</div>';
 }
 function packTabSwitch(t) { S.packTab = t; renderPack(); }
-function backPackList() { S.packView = 'list'; S.pkBox = null; renderPack(); var el = $('pkScan'); if (el) el.focus(); }
+function backPackList() {
+  S.packView = 'list';
+  S.pkBox = null;
+  NF.pack = '';
+  var scan = $('pkScan');
+  scan.value = '';
+  renderPack();
+  scan.focus();
+}
+function openPackBox(box) {
+  NF.pack = '';
+  S.pkBox = box;
+  S.packView = 'op';
+  var scan = $('pkScan');
+  scan.value = '';
+  renderPack();
+  if (editablePackBox()) scan.focus();
+}
+function refocusPackScan() {
+  var scan = $('pkScan');
+  scan.focus();
+  scan.select();
+}
 function pickBox(no) {
   var bx = findBox(no);
   if (!bx) { toast('未找到该装箱', 'err'); return; }
-  NF.pack = '';
-  S.pkBox = bx;
-  S.packView = 'op';
+  openPackBox(bx);
   buzz(20);
-  renderPack();
-  var el = $('pkAdd'); if (el) el.focus();
 }
 function whTempPack() {
-  var box = S.pkBox, u = S.user;
+  var box = editablePackBox();
   if (!box) return;
   if (!(box.pkgs || []).length) { toast('箱内还没有包裹，先扫码加入', 'err'); return; }
   box.tm = box.tm || nowStr();
   var n = box.pkgs.length;
-  S.pkBox = null;
-  S.packView = 'list';
+  backPackList();
   buzz(30);
   toast('已临时装箱 ' + box.no + '（' + n + ' 件，未入库）', 'ok');
-  renderPack();
-  var el = $('pkScan'); if (el) el.focus();
 }
 function scanPack() {
-  var no = ($('pkScan').value || '').trim();
-  if (!no) { toast('请扫描或输入装箱号', 'err'); return; }
-  var box = findBox(no);
-  if (!box) {
-    box = { no: no, wh: S.user.wh, st: '未入库', pkgs: [], loc: '', inTime: '', operator: '' };
-    BOXES.unshift(box);
-    toast('新箱号已建档，可扫码加入包裹', 'ok');
+  var scan = $('pkScan');
+  var no = scan.value.trim();
+  var current = editablePackBox();
+  if (!no) {
+    toast(current ? '请扫描或输入包裹单号' : '请扫描或输入装箱号', 'err');
+    scan.focus();
+    return;
   }
-  NF.pack = '';
-  var u = S.user;
-  if (box.st === '已入库') { toast('该箱已于 ' + (box.inTime || '—') + ' 入库（货位 ' + (box.loc || '—') + '）', 'err'); buzz(120); return; }
-  if (box.wh !== u.wh) { toast('该箱属于 ' + (box.wh || '—') + '，不是本仓', 'err'); buzz(150); return; }
-  S.pkBox = box;
-  S.packView = 'op';
-  $('pkScan').value = '';
+  if (current) { addPkgToBox(current, no); return; }
+  var box = findBox(no);
+  if (!box) { createBoxOpen(no); return; }
+  if (box.st === '已入库') { toast('该箱已于 ' + (box.inTime || '—') + ' 入库（货位 ' + (box.loc || '—') + '）', 'err'); buzz(120); refocusPackScan(); return; }
+  if (box.wh !== S.user.wh) { toast('该箱属于 ' + (box.wh || '—') + '，不是本仓', 'err'); buzz(150); refocusPackScan(); return; }
+  openPackBox(box);
   buzz(30);
-  renderPack();
   toast('识别成功 · 箱内 ' + box.pkgs.length + ' 件', 'ok');
 }
 function createBoxOpen(no) {
-  var u = S.user;
-  var box = { no: no, wh: u.wh, st: '未入库', pkgs: [], loc: '', inTime: '', operator: '', tm: nowStr() };
+  var box = { no: no, wh: S.user.wh, st: '未入库', pkgs: [], loc: '', inTime: '', operator: '' };
   BOXES.unshift(box);
-  NF.pack = '';
-  S.pkBox = box;
+  openPackBox(box);
   buzz(30);
-  toast('已新建装箱，可扫码加入包裹', 'ok');
-  renderPack();
+  toast('新箱号已建档，可扫码加入包裹', 'ok');
 }
-function addPkgToBox() {
-  var box = S.pkBox, u = S.user;
-  if (!box) return;
-  var el = $('pkAdd');
-  var v = el ? (el.value || '').trim() : '';
-  if (!v) { toast('请扫或输入包裹单号', 'err'); return; }
-  if ((box.pkgs || []).indexOf(v) >= 0) { toast('该包裹已在箱内', 'err'); buzz(100); return; }
-  var p = findPkg(v);
-  if (p && p.wh === u.wh && p.st === '已入库') { toast('该包裹已在 ' + u.wh + ' 在库，不需要再装箱', 'err'); buzz(120); return; }
-  box.pkgs.push(v);
-  if (el) el.value = '';
+function addPkgToBox(box, no) {
+  var scan = $('pkScan');
+  if (findBox(no) || /^XA\d{11,12}$/i.test(no)) {
+    toast('当前正在装箱，请扫描包裹单号。切换箱号请先返回列表', 'err');
+    buzz(120);
+    refocusPackScan();
+    return;
+  }
+  if (box.pkgs.includes(no)) { toast('该包裹已在箱内', 'err'); buzz(100); refocusPackScan(); return; }
+  var p = findPkg(no);
+  if (p && p.wh === S.user.wh && p.st === '已入库') { toast('该包裹已在 ' + S.user.wh + ' 在库，不需要再装箱', 'err'); buzz(120); refocusPackScan(); return; }
+  box.pkgs.push(no);
+  scan.value = '';
   buzz(25);
   toast('已加入箱内（' + box.pkgs.length + ' 件）', 'ok');
   renderPack();
-  var e2 = $('pkAdd'); if (e2) e2.focus();
+  scan.focus();
 }
 function confirmPack() {
   var box = S.pkBox, u = S.user;
@@ -2426,12 +2444,10 @@ function confirmPack() {
     }
   });
   S.stats.in++;
-  S.pkBox = null;
-  S.packView = 'list';
+  backPackList();
   buzz(45);
   toast('装箱入库成功 · ' + box.no + '（' + n + ' 件）→ ' + loc, 'ok');
-  renderPack(); renderHome();
-  var e2 = $('pkScan'); if (e2) e2.focus();
+  renderHome();
 }
 
 /* ==================== 出库转运 ==================== */
@@ -3045,7 +3061,7 @@ function confirmSignBatch() {
 function clearScan(which) {
   if (which === 'in') { S.inPkg = null; S.newInForm = null; NF.in = ''; $('inScan').value = ''; renderIn(); var a = $('inScan'); if (a) a.focus(); }
   if (which === 'out') { S.outPkgs = []; S.outTo = ''; NF.out = ''; closeWhSheet(); $('outScan').value = ''; renderOut(); var b = $('outScan'); if (b) b.focus(); }
-  if (which === 'pack') { S.pkBox = null; NF.pack = ''; $('pkScan').value = ''; renderPack(); var pk = $('pkScan'); if (pk) pk.focus(); }
+  if (which === 'pack') backPackList();
   if (which === 'search') { S.srPkg = null; NF.search = ''; $('srScan').value = ''; renderSearch(); var c = $('srScan'); if (c) c.focus(); }
 }
 
